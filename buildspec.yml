@@ -2,18 +2,18 @@ version: 0.2
 
 phases:
   install:
-	runtime-versions:
-	  java: openjdk8
+    runtime-versions:
+      java: openjdk8
   pre_build:
-	command:
-	  - echo Nothing to do in prebuild
+    commands:
+      - echo Nothing to do in prebuild
   build:
-	command:
-	  - echo Build started on 'date'
-	  - mvn package
+    commands:
+      - echo Build started on `date`
+      - mvn package
   post_build:
-	command:
-	  -echo Build completed on 'date'
+    commands:
+      - echo Build completed on `date`
 artifacts:
   files:
     - target/spring-petclinic-2.2.0.BUILD-SNAPSHOT.jar
