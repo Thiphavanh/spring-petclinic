@@ -150,8 +150,8 @@ Resources:
         EventPattern:
           source:
             - "aws.codepipeline"
-          detail_type:
-            -"CodePipeline Pipeline Execution State Change"
+          detail-type:
+            - "CodePipeline Pipeline Execution State Change"
           detail:
             stage:
               - "FAILED"
@@ -185,7 +185,7 @@ Resources:
         - Effect: Allow
           Principal:
             Service:
-              -events.amazonaws.com
+              - events.amazonaws.com
           Action: sns:Publish
           Resource: !Ref PipelineSNSTopic
       Topics:
