@@ -16,6 +16,9 @@ Parameters:
   RepoName:
     Type: String
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
+  Email:
+    Type: String
+    Description: Email Pipeline alearts get sent to
 
 Resources:
   ECRRepository:
@@ -140,6 +143,53 @@ Resources:
           StreamName: !Sub '${AWS::StackName}-stream'
       Name: !Ref AWS::StackName
       ServiceRole: !Ref CodeBuildServiceRole
+  PipeLineEventRule:
+      Type: "AWS::Events::Rule"
+      Properties:
+        Description: "Trigger notifications based on pipeline state changes"
+        EventPattern:
+          source:
+            - "aws.codepipeline"
+          detail_type:
+            -"CodePipeline Pipeline Execution State Change"
+          detail:
+            stage:
+              - "FAILED"
+            pipeline:
+              - !Ref Pipeline
+        State: "ENABLED"
+        Targets:
+          -
+            Arn: !Ref PipelineSNSTopic
+            Id: !Sub "${AWS::StackName}"
+            InputTransformer:
+              InputTemplate: "The pipeline <pipeline> from account <account> has <state> at <at>."
+              InputPathsMap:
+                pipeline: "$.detail.pipeline"
+                state: "$.detail.state"
+                at: "$.time"
+                account: "$.account"
+  PipelineSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint: !Ref Email
+          Protocol: email
+  PipelineSNSTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Id: MyTopicPolicy
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              -events.amazonaws.com
+          Action: sns:Publish
+          Resource: !Ref PipelineSNSTopic
+      Topics:
+      - !Ref PipelineSNSTopic
   CloudFormationTrustRole:
     DependsOn:
     - ArtifactStoreBucket
