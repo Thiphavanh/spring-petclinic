@@ -163,7 +163,7 @@ Resources:
             Arn: !Ref PipelineSNSTopic
             Id: !Sub "${AWS::StackName}"
             InputTransformer:
-              InputTemplate: "The pipeline <pipeline> from account <account> has <state> at <at>."
+              InputTemplate: '"The pipeline <pipeline> from account <account> has <state> at <at>."'
               InputPathsMap:
                 pipeline: "$.detail.pipeline"
                 state: "$.detail.state"
