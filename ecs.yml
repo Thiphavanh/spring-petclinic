@@ -150,8 +150,13 @@ Resources:
         Essential: true
         Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repo}:latest'
         Memory: 300
-        LogConfiguration:
-          LogDriver: awslogs
+        HealthCheck:
+            command:
+              - "CMD-SHELL"
+              - "wget http://localhost:8080/ || exit 1"
+            StartPeriod: 300
+        logConfiguration:
+          logDriver: awslogs
           Options:
             awslogs-group: !Ref 'CloudwatchLogsGroup'
             awslogs-region: !Ref 'AWS::Region'
